@@ -1,7 +1,7 @@
 TNKernel-PIC32
 ==============
 
-A port of [TNKernel](http://www.tnkernel.com/ "TNKernel") for the PIC32
+A port of [TNKernel](http://www.tnkernel.com/ "TNKernel") for PIC32
 
 ---
 
