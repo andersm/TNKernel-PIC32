@@ -155,14 +155,10 @@ cs0_int_handler:
 
     sw      $k1, 120($sp)
 
-    ins     $k1, $zero, 1, 15
-    ori     $k1, $k1, 0x400
-    mtc0    $k1, $12                    /* c0_status */
-
     /* enable nested interrupts */
+    ins     $k1, $zero, 1, 15           /* clear IPL, UM, ERL, EXL */
     ext     $k0, $k0, 10, 6             /* extract RIPL */
-    ins     $k1, $k1, 10, 6             /* set current IPL */
-    ins     $k1, $zero, 1, 4            /* clear UM, ERL, EXL */
+    ins     $k1, $k0, 10, 6             /* set current IPL */
     mtc0    $k1, $12                    /* c0_status */
 
     sw      $31, 116($sp)               /* save current task registers */
