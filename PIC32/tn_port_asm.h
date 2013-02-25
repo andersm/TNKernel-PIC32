@@ -198,7 +198,6 @@ isr_wrapper_\isr:
     wrpgpr  $sp, $sp
     mtc0    $k1, $12                # c0_status
     eret
-    nop
 
     .end    isr_wrapper_\isr
     .size   isr_wrapper_\isr, .-isr_wrapper_\isr
@@ -328,7 +327,6 @@ isr_wrapper_\isr:
     wrpgpr  $sp, $sp
     mtc0    $k1, $12                # c0_status
     eret
-    nop
 
     .end    isr_wrapper_\isr
     .size   isr_wrapper_\isr, .-isr_wrapper_\isr
