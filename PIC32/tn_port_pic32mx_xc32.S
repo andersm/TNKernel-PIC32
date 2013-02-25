@@ -72,8 +72,7 @@ tn_start_exe:
     la      $t1, tn_system_state
     sb      $t0, 0($t1)
 
-    la      $k0, tn_curr_run_task       /* = tn_next_task_to_run */
-    lw      $k1, 0($k0)
+    lw      $k1, tn_curr_run_task       /* = tn_next_task_to_run */
     j       tn_sw_restore
     lw      $sp, 0($k1)                 /* load new task SP */
 
@@ -87,8 +86,7 @@ tn_start_exe:
     .ent tn_switch_context_exit
 
 tn_switch_context_exit:
-    la      $k0, tn_curr_run_task       /* = tn_next_task_to_run */
-    lw      $k1, 0($k0)
+    lw      $k1, tn_curr_run_task       /* = tn_next_task_to_run */
     j       tn_sw_restore
     lw      $sp, 0($k1)                 /* load new task SP */
 
@@ -195,6 +193,7 @@ cs0_int_handler:
     sw      $t1, 0($sp)
 
     di      $zero                       /* disable interrupts */
+    ehb
 
     la      $t0, tn_curr_run_task
     la      $t2, tn_next_task_to_run

@@ -56,6 +56,14 @@ volatile unsigned int tn_ready_to_run_bmp;
 volatile unsigned long tn_idle_count;
 volatile unsigned long tn_curr_performance;
 
+volatile int tn_int_nest_count;
+
+#ifdef TN_INT_STACK
+void * tn_user_sp;               //-- Saved task stack pointer
+void * tn_int_sp;                //-- Saved ISR stack pointer
+
+align_attr_start unsigned int tn_int_stack[TN_INT_STACK_SIZE] align_attr_end;
+#endif
 
  //-- System tasks
 
@@ -109,6 +117,11 @@ void tn_start_system(void)
 
    tn_next_task_to_run = NULL;
    tn_curr_run_task    = NULL;
+
+#ifdef TN_INT_STACK
+   //-- Pre-decrement stack
+   tn_int_sp = &(tn_int_stack[TN_INT_STACK_SIZE]);
+#endif
 
   //-- System tasks
 
