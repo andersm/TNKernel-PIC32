@@ -51,11 +51,12 @@
     .extern \isr
 
     .global __vector_dispatch_\vec
-    .global isr_stub_\isr
+    .global isr_wrapper_\isr
 
     .ent    __vector_dispatch_\vec
 __vector_dispatch_\vec:
     j   isr_wrapper_\isr
+    nop
     .end    __vector_dispatch_\vec
     .size   __vector_dispatch_\vec, .-__vector_dispatch_\vec
 
@@ -216,11 +217,12 @@ isr_wrapper_\isr:
     .extern \isr
 
     .global __vector_dispatch_\vec
-    .global isr_stub_\isr
+    .global isr_wrapper_\isr
 
     .ent    __vector_dispatch_\vec
 __vector_dispatch_\vec:
     j   isr_wrapper_\isr
+    nop
     .end    __vector_dispatch_\vec
     .size   __vector_dispatch_\vec, .-__vector_dispatch_\vec
 

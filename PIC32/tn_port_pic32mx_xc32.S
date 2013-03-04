@@ -108,6 +108,7 @@ tn_switch_context:
 .if buildmode != simulator
     jr.hb   $ra
 .else
+    ehb
     jr   $ra
 .endif
     nop
@@ -130,6 +131,7 @@ tn_int_exit:
 .if buildmode != simulator
     jr.hb   $ra
 .else
+    ehb
     jr   $ra
 .endif
     nop
@@ -272,6 +274,7 @@ tn_cpu_save_sr:
 .if buildmode != simulator
     jr.hb   $ra                         /* Return with hazard barrier */
 .else
+    ehb
     jr   $ra                            /* Return with hazard barrier */
 .endif
     nop
@@ -291,6 +294,7 @@ tn_cpu_restore_sr:
 .if buildmode != simulator
     jr.hb   $ra                         /* Return with hazard barrier */
 .else
+    ehb
     jr   $ra                            /* Return with hazard barrier */
 .endif
     nop
