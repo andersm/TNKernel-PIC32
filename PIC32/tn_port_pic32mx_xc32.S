@@ -48,7 +48,6 @@
     .global  tn_cpu_restore_sr
     .global  tn_start_exe
     .global  tn_chk_irq_disabled
-    .global  tn_int_exit
     .global  cs0_int_handler
     .global  tn_inside_int
 
@@ -114,29 +113,6 @@ tn_switch_context:
     nop
 
     .end tn_switch_context
-
-/*----------------------------------------------------------------------------
-*
-*----------------------------------------------------------------------------*/
-    .set noreorder
-    .set noat
-    .ent tn_int_exit
-
-tn_int_exit:
-
-    /* invoke CS0 interrupt */
-    mfc0    $t0, $13, 0                    /* c0_cause */
-    ori     $t0, 256
-    mtc0    $t0, $13, 0                    /* c0_cause */
-.if buildmode != simulator
-    jr.hb   $ra
-.else
-    ehb
-    jr   $ra
-.endif
-    nop
-
-    .end tn_int_exit
 
 /*----------------------------------------------------------------------------
 *

@@ -84,8 +84,6 @@ extern "C"  {
   int   tn_chk_irq_disabled(void);
   int   ffs_asm(unsigned int val);
 
-  void tn_int_enter(void);
-  void tn_int_exit(void);
   void tn_pic32_disable_interrupts(void);
   void tn_pic32_enable_interrupts(void);
 
