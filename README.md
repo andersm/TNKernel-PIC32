@@ -4,6 +4,38 @@ TNKernel-PIC32
 A port of [TNKernel](http://www.tnkernel.com/ "TNKernel") for PIC32
 
 ---
+TNKernel-PIC32 is a new, independent port of TNKernel 2.6, based on the Cortex-M3 version.
+
+##Context switch
+The context switch is implemented using the core software 0 interrupt. It should be configured to use the lowest priority in the system:
+
+    // set up the software interrupt 0 with a priority of 1, subpriority 0
+    INTSetVectorPriority(INT_CORE_SOFTWARE_0_VECTOR, INT_PRIORITY_LEVEL_1);
+    INTSetVectorSubPriority(INT_CORE_SOFTWARE_0_VECTOR, INT_SUB_PRIORITY_LEVEL_0);
+    INTEnable(INT_CS0, INT_ENABLED);
+
+The interrupt priority level used by the context switch interrupt should not be configured to use shadow register sets.
+
+##Interrupts
+TNKernel-PIC32 supports nested interrupts. The kernel provides assembly-language macros for calling C-language interrupt service routines. Both software and shadow register interrupt context saving is supported:
+
+    #include "tn_port_asm.h"
+    
+    #define _CORE_TIMER_VECTOR 0
+    #define _INT_UART_1_VECTOR 24
+    
+    # Core timer interrupt handler using software interrupt context saving
+    tn_soft_isr CoreTimerHandler _CORE_TIMER_VECTOR
+    
+    # High-priority UART interrupt handler using shadow register set
+    tn_srs_isr UartHandler _INT_UART_1_VECTOR
+
+##Interrupt stack
+TNKernel-PIC32 supports using a separate stack for interrupt handlers. The feature is enabled by adding `TN_INT_STACK` to the preprocessor definitions in your project (for both C and assembly language files). Switching stack pointers is done automatically in the ISR handler wrapper macros. The size of the interrupt stack in words is configured in `tn_port.h`:
+
+    #define  TN_INT_STACK_SIZE         256
+ 
+---
 
 The kernel is released under the BSD license as follows:
 
