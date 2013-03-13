@@ -55,7 +55,7 @@
 
     .ent    __vector_dispatch_\vec
 __vector_dispatch_\vec:
-    j   isr_wrapper_\isr
+    j   isr_wrapper_\isr\()_\vec
     nop
     .end    __vector_dispatch_\vec
     .size   __vector_dispatch_\vec, .-__vector_dispatch_\vec
@@ -67,8 +67,8 @@ __vector_dispatch_\vec:
     .text
     .align  2
 
-    .ent    isr_wrapper_\isr
-isr_wrapper_\isr:
+    .ent    isr_wrapper_\isr\()_\vec
+isr_wrapper_\isr\()_\vec:
     rdpgpr  $sp, $sp
 
     /* Increase interrupt nesting count */
@@ -200,8 +200,8 @@ isr_wrapper_\isr:
     mtc0    $k1, $12                # c0_status
     eret
 
-    .end    isr_wrapper_\isr
-    .size   isr_wrapper_\isr, .-isr_wrapper_\isr
+    .end    isr_wrapper_\isr\()_\vec
+    .size   isr_wrapper_\isr\()_\vec, .-isr_wrapper_\isr\()_\vec
 
     .endm
 
@@ -221,7 +221,7 @@ isr_wrapper_\isr:
 
     .ent    __vector_dispatch_\vec
 __vector_dispatch_\vec:
-    j   isr_wrapper_\isr
+    j   isr_wrapper_\isr\()_\vec
     nop
     .end    __vector_dispatch_\vec
     .size   __vector_dispatch_\vec, .-__vector_dispatch_\vec
@@ -233,8 +233,8 @@ __vector_dispatch_\vec:
     .text
     .align  2
 
-    .ent    isr_wrapper_\isr
-isr_wrapper_\isr:
+    .ent    isr_wrapper_\isr\()_\vec
+isr_wrapper_\isr\()_\vec:
     rdpgpr  $sp, $sp
 
     /* Increase interrupt nesting count */
@@ -292,7 +292,7 @@ isr_wrapper_\isr:
 
     /* Pend context switch if needed */
     lw      $k0, tn_curr_run_task
-    lw      $k1, tn_text_task_to_run
+    lw      $k1, tn_next_task_to_run
     lw      $k0, 0($k0)
     lw      $k1, 0($k1)
     beq     $k0, $k1, 1f
@@ -330,8 +330,8 @@ isr_wrapper_\isr:
     mtc0    $k1, $12                # c0_status
     eret
 
-    .end    isr_wrapper_\isr
-    .size   isr_wrapper_\isr, .-isr_wrapper_\isr
+    .end    isr_wrapper_\isr\()_\vec
+    .size   isr_wrapper_\isr\()_\vec, .-isr_wrapper_\isr\()_\vec
 
     .endm
 
