@@ -72,10 +72,10 @@ isr_wrapper_\isr\()_\vec:
     rdpgpr  $sp, $sp
 
     /* Increase interrupt nesting count */
-    la      $k0, tn_int_nest_count
-    lw      $k1, 0($k0)
+    lui     $k0, %hi(tn_int_nest_count)
+    lw      $k1, %lo(tn_int_nest_count)($k0)
     addiu   $k1, $k1, 1
-    sw      $k1, 0($k0)
+    sw      $k1, %lo(tn_int_nest_count)($k0)
     ori     $k0, $zero, 1
     bne     $k1, $k0, 1f
     nop
@@ -84,19 +84,19 @@ isr_wrapper_\isr\()_\vec:
     /* Swap stack pointers if nesting count is one */
     lui     $k0, %hi(tn_user_sp)
     sw      $sp, %lo(tn_user_sp)($k0)
-    la      $k0, tn_int_sp
-    lw      $sp, 0($k0)
+    lui     $k0, %hi(tn_int_sp)
+    lw      $sp, %lo(tn_int_sp)($k0)
 #endif
 
 1:
     /* Save context on stack */
     addiu   $sp, $sp, -92
-    mfc0    $k0, $12                    # c0_status
     mfc0    $k1, $14                    # c0_epc
-    sw      $k0, 88($sp)
     mfc0    $k0, $12, 2                 # c0_srsctl
     sw      $k1, 84($sp)
     sw      $k0, 80($sp)
+    mfc0    $k1, $12                    # c0_status
+    sw      $k1, 88($sp)
 
     /* Enable nested interrupts */
     mfc0    $k0, $13                    # c0_cause
@@ -180,10 +180,10 @@ isr_wrapper_\isr\()_\vec:
     addiu   $sp, $sp, 92
 
     /* Decrease interrupt nesting count */
-    la      $k0, tn_int_nest_count
-    lw      $k1, 0($k0)
+    lui     $k0, %hi(tn_int_nest_count)
+    lw      $k1, %lo(tn_int_nest_count)($k0)
     addiu   $k1, $k1, -1
-    sw      $k1, 0($k0)
+    sw      $k1, %lo(tn_int_nest_count)($k0)
     bne     $k1, $zero, 1f
     lw      $k1, -4($sp)
 
@@ -191,8 +191,8 @@ isr_wrapper_\isr\()_\vec:
     /* Swap stack pointers if nesting count is zero */
     lui     $k0, %hi(tn_int_sp)
     sw      $sp, %lo(tn_int_sp)($k0)
-    la      $k0, tn_user_sp
-    lw      $sp, 0($k0)
+    lui     $k0, %hi(tn_user_sp)
+    lw      $sp, %lo(tn_user_sp)($k0)
 #endif
 
 1:
@@ -238,10 +238,10 @@ isr_wrapper_\isr\()_\vec:
     rdpgpr  $sp, $sp
 
     /* Increase interrupt nesting count */
-    la      $k0, tn_int_nest_count
-    lw      $k1, 0($k0)
+    lui     $k0, %hi(tn_int_nest_count)
+    lw      $k1, %lo(tn_int_nest_count)($k0)
     addiu   $k1, $k1, 1
-    sw      $k1, 0($k0)
+    sw      $k1, %lo(tn_int_nest_count)($k0)
     ori     $k0, $zero, 1
     bne     $k1, $k0, 1f
     nop
@@ -250,19 +250,19 @@ isr_wrapper_\isr\()_\vec:
     /* Swap stack pointers if nesting count is one */
     lui     $k0, %hi(tn_user_sp)
     sw      $sp, %lo(tn_user_sp)($k0)
-    la      $k0, tn_int_sp
-    lw      $sp, 0($k0)
+    lui     $k0, %hi(tn_int_sp)
+    lw      $sp, %lo(tn_int_sp)($k0)
 #endif
 
 1:
     /* Save context on stack */
     addiu   $sp, $sp, -20
-    mfc0    $k0, $12                    # c0_status
     mfc0    $k1, $14                    # c0_epc
-    sw      $k0, 16($sp)
     mfc0    $k0, $12, 2                 # c0_srsctl
     sw      $k1, 12($sp)
     sw      $k0, 8($sp)
+    mfc0    $k1, $12                    # c0_status
+    sw      $k1, 16($sp)
 
     /* Enable nested interrupts */
     mfc0    $k0, $13                    # c0_cause
@@ -310,10 +310,10 @@ isr_wrapper_\isr\()_\vec:
     addiu   $sp, $sp, 20
 
     /* Decrease interrupt nesting count */
-    la      $k0, tn_int_nest_count
-    lw      $k1, 0($k0)
+    lui     $k0, %hi(tn_int_nest_count)
+    lw      $k1, %lo(tn_int_nest_count)($k0)
     addiu   $k1, $k1, -1
-    sw      $k1, 0($k0)
+    sw      $k1, %lo(tn_int_nest_count)($k0)
     bne     $k1, $zero, 1f
     lw      $k1, -4($sp)
 
@@ -321,8 +321,8 @@ isr_wrapper_\isr\()_\vec:
     /* Swap stack pointers if nesting count is zero */
     lui     $k0, %hi(tn_int_sp)
     sw      $sp, %lo(tn_int_sp)($k0)
-    la      $k0, tn_user_sp
-    lw      $sp, 0($k0)
+    lui     $k0, %hi(tn_user_sp)
+    lw      $sp, %lo(tn_user_sp)($k0)
 #endif
 
 1:
