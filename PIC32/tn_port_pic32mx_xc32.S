@@ -55,7 +55,7 @@
 
     /* Constants */
     .equ IFS0CLR, 0xBF881034
-    .equ context_size, 124
+    .equ context_size, 128
     .equ buildmode, simulator           /* workaround for buggy simulator */
 
 /*----------------------------------------------------------------------------
