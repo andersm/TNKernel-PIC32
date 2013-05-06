@@ -51,8 +51,6 @@
     .global  cs0_int_handler
     .global  tn_inside_int
 
-    .global  ffs_asm
-
     /* Constants */
     .equ IFS0CLR, 0xBF881034
     .equ context_size, 128
@@ -309,24 +307,6 @@ tn_inside_int:
     xori    $v0, $v0, 1                 /* flip result */
 
     .end tn_inside_int
-
-/*----------------------------------------------------------------------------
-*
-*----------------------------------------------------------------------------*/
-    .set noreorder
-    .set noat
-    .ent ffs_asm
-
-ffs_asm:
-
-    subu    $t0, $zero, $a0
-    and     $t0, $t0, $a0
-    clz     $t0, $t0
-    ori     $v0, $zero, 32
-    jr      $ra
-    subu    $v0, $v0, $t0
-
-    .end ffs_asm
 
 /*----------------------------------------------------------------------------*/
 /*----------------------------------------------------------------------------*/

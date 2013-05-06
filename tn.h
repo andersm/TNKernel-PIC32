@@ -443,9 +443,9 @@ unsigned int * tn_stack_init(void * task_func,
 
   //--- tn_user.c ---
 
-void tn_cpu_irq_handler(void);
 void tn_cpu_int_enable(void);
-int  tn_inside_int(void);         //--- Usable for Cortex-M3 only
+void tn_cpu_int_disable(void);
+int  tn_inside_int(void);
 
 
 #ifdef __cplusplus
@@ -453,6 +453,3 @@ int  tn_inside_int(void);         //--- Usable for Cortex-M3 only
 #endif
 
 #endif
-
-
-
