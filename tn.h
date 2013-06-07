@@ -279,10 +279,8 @@ extern volatile unsigned long tn_curr_performance;
 
 extern volatile int tn_int_nest_count;
 
-#ifdef TN_INT_STACK
 extern void * tn_user_sp;               //-- Saved task stack pointer
 extern void * tn_int_sp;                //-- Saved ISR stack pointer
-#endif
 
  //-- Thanks to Vyacheslav Ovsiyenko - for his highly optimized code
 

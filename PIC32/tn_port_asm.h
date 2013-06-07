@@ -78,15 +78,12 @@ isr_wrapper_\isr\()_\vec:
     sw      $k1, %lo(tn_int_nest_count)($k0)
     ori     $k0, $zero, 1
     bne     $k1, $k0, 1f
-    nop
 
-#ifdef TN_INT_STACK
     /* Swap stack pointers if nesting count is one */
     lui     $k0, %hi(tn_user_sp)
     sw      $sp, %lo(tn_user_sp)($k0)
     lui     $k0, %hi(tn_int_sp)
     lw      $sp, %lo(tn_int_sp)($k0)
-#endif
 
 1:
     /* Save context on stack */
@@ -187,13 +184,11 @@ isr_wrapper_\isr\()_\vec:
     bne     $k1, $zero, 1f
     lw      $k1, -4($sp)
 
-#ifdef TN_INT_STACK
     /* Swap stack pointers if nesting count is zero */
     lui     $k0, %hi(tn_int_sp)
     sw      $sp, %lo(tn_int_sp)($k0)
     lui     $k0, %hi(tn_user_sp)
     lw      $sp, %lo(tn_user_sp)($k0)
-#endif
 
 1:
     wrpgpr  $sp, $sp
@@ -244,15 +239,12 @@ isr_wrapper_\isr\()_\vec:
     sw      $k1, %lo(tn_int_nest_count)($k0)
     ori     $k0, $zero, 1
     bne     $k1, $k0, 1f
-    nop
 
-#ifdef TN_INT_STACK
     /* Swap stack pointers if nesting count is one */
     lui     $k0, %hi(tn_user_sp)
     sw      $sp, %lo(tn_user_sp)($k0)
     lui     $k0, %hi(tn_int_sp)
     lw      $sp, %lo(tn_int_sp)($k0)
-#endif
 
 1:
     /* Save context on stack */
@@ -317,13 +309,11 @@ isr_wrapper_\isr\()_\vec:
     bne     $k1, $zero, 1f
     lw      $k1, -4($sp)
 
-#ifdef TN_INT_STACK
     /* Swap stack pointers if nesting count is zero */
     lui     $k0, %hi(tn_int_sp)
     sw      $sp, %lo(tn_int_sp)($k0)
     lui     $k0, %hi(tn_user_sp)
     lw      $sp, %lo(tn_user_sp)($k0)
-#endif
 
 1:
     wrpgpr  $sp, $sp

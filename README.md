@@ -4,7 +4,7 @@ TNKernel-PIC32
 A port of [TNKernel](http://www.tnkernel.com/ "TNKernel") for PIC32
 
 ---
-TNKernel-PIC32 is a new, independent port of TNKernel 2.6, based on the Cortex-M3 version.
+TNKernel-PIC32 is a port of TNKernel 2.6, based on the Cortex-M3 version. For a full description of the kernel API, please see the [TNKernel project documentation](http://www.tnkernel.com/tn_description.html "TNKernel project documentation")
 
 ##Context switch
 The context switch is implemented using the core software 0 interrupt. It should be configured to use the lowest priority in the system:
@@ -31,7 +31,7 @@ TNKernel-PIC32 supports nested interrupts. The kernel provides assembly-language
     tn_srs_isr UartHandler _INT_UART_1_VECTOR
 
 ##Interrupt stack
-TNKernel-PIC32 supports using a separate stack for interrupt handlers. The feature is enabled by adding `TN_INT_STACK` to the preprocessor definitions in your project (for both C and assembly language files). Switching stack pointers is done automatically in the ISR handler wrapper macros. The size of the interrupt stack in words is configured in `tn_port.h`:
+TNKernel-PIC32 uses a separate stack for interrupt handlers. Switching stack pointers is done automatically in the ISR handler wrapper macros. The size of the interrupt stack in words is configured in `tn_port.h`:
 
     #define  TN_INT_STACK_SIZE         256
  
