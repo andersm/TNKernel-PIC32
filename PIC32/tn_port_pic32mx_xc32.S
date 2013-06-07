@@ -70,7 +70,7 @@ tn_start_exe:
     sb      $t0, 0($t1)
 
     lw      $k1, tn_curr_run_task       /* = tn_next_task_to_run */
-    j       tn_sw_restore
+    j       tn_restore_context
     lw      $sp, 0($k1)                 /* load new task SP */
 
     .end tn_start_exe
@@ -84,7 +84,7 @@ tn_start_exe:
 
 tn_switch_context_exit:
     lw      $k1, tn_curr_run_task       /* = tn_next_task_to_run */
-    j       tn_sw_restore
+    j       tn_restore_context
     lw      $sp, 0($k1)                 /* load new task SP */
 
     .end tn_switch_context_exit
@@ -98,17 +98,27 @@ tn_switch_context_exit:
 
 tn_switch_context:
 
+    /* check if task switch needed */
+    la      $t0, tn_curr_run_task
+    la      $t1, tn_next_task_to_run
+    lw      $t0, 0($t0)
+    lw      $t1, 0($t1)
+    beq     $t0, $t1, 1f
+    nop
+
     /* invoke CS0 interrupt */
     mfc0    $t0, $13                    /* c0_cause */
     ori     $t0, 256
     mtc0    $t0, $13                    /* c0_cause */
+
+1:
 .if buildmode != simulator
     jr.hb   $ra
-.else
-    ehb
-    jr   $ra
-.endif
     nop
+.else
+    jr   $ra
+    ehb
+.endif
 
     .end tn_switch_context
 
@@ -121,11 +131,11 @@ tn_switch_context:
 
 cs0_int_handler:
 
-    mfc0    $k0, $13                    /* c0_cause */
     mfc0    $k1, $14                    /* c0_epc */
     addiu   $sp, $sp, -context_size     /* allocate context on stack */
     sw      $k1, 124($sp)               /* save return address */
     mfc0    $k1, $12                    /* c0_status */
+    mfc0    $k0, $13                    /* c0_cause */
 
     sw      $k1, 120($sp)
 
@@ -168,21 +178,17 @@ cs0_int_handler:
     sw      $t0, 4($sp)
     sw      $t1, 0($sp)
 
-    di      $zero                       /* disable interrupts */
+    la      $t0, tn_curr_run_task
+    lw      $t1, 0($t0)
+    sw      $sp, 0($t1)                 /* store sp in preempted task's TCB */
+
+    di      $t2                         /* disable interrupts */
     ehb
 
-    la      $t0, tn_curr_run_task
-    la      $t2, tn_next_task_to_run
-    lw      $t1, 0($t0)
-    lw      $t2, 0($t2)
-    beq     $t1, $t2, tn_sw_restore
-    nop
-
-    sw      $sp, 0($t1)                 /* store sp in preempted task's TCB */
-    lw      $sp, 0($t2)                 /* get new task's sp */
-    sw      $t2, 0($t0)                 /* tn_curr_run_task = tn_next_task_to_run */
-
-tn_sw_restore:
+    la      $t1, tn_next_task_to_run
+    lw      $t1, 0($t1)
+    lw      $sp, 0($t1)                 /* get new task's sp */
+    sw      $t1, 0($t0)                 /* tn_curr_run_task = tn_next_task_to_run */
 
     mfc0    $k0, $13                    /* c0_cause */
     ins     $k0, $zero, 8, 1            /* clear IP0 */
@@ -192,10 +198,14 @@ tn_sw_restore:
     ori     $k1, $zero, 2
     sw      $k1, 0($k0)
 
-    lw      $k0, 0($sp)
-    lw      $k1, 4($sp)
-    mtlo    $k0
-    mthi    $k1
+    mtc0    $t2, $12                    /* re-enable interrupts */
+
+tn_restore_context:
+
+    lw      $t0, 0($sp)
+    lw      $t1, 4($sp)
+    mtlo    $t0
+    mthi    $t1
 
     lw      $1, 8($sp)
     lw      $2, 12($sp)
@@ -226,6 +236,9 @@ tn_sw_restore:
     lw      $30, 112($sp)
     lw      $31, 116($sp)
 
+    di      $zero
+    ehb
+
     lw      $k1, 124($sp)
     lw      $k0, 120($sp)
     mtc0    $k1, $14                    /* c0_epc */
@@ -247,11 +260,11 @@ tn_cpu_save_sr:
     di      $v0                         /* Disable interrupts */
 .if buildmode != simulator
     jr.hb   $ra                         /* Return with hazard barrier */
-.else
-    ehb
-    jr   $ra                            /* Return with hazard barrier */
-.endif
     nop
+.else
+    jr   $ra                            /* Return with hazard barrier */
+    ehb
+.endif
 
     .end tn_cpu_save_sr
 
@@ -267,11 +280,11 @@ tn_cpu_restore_sr:
     mtc0    $a0, $12                    /* c0_status */
 .if buildmode != simulator
     jr.hb   $ra                         /* Return with hazard barrier */
-.else
-    ehb
-    jr   $ra                            /* Return with hazard barrier */
-.endif
     nop
+.else
+    jr   $ra                            /* Return with hazard barrier */
+    ehb
+.endif
 
     .end tn_cpu_restore_sr
 
