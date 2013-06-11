@@ -40,15 +40,13 @@
     .extern tn_next_task_to_run
 
 /*----------------------------------------------------------------------------
-* Interrupt handler wrapper macro for software context saving IPL
+* Interrupt vector dispatch macro
 *----------------------------------------------------------------------------*/
-    .macro tn_soft_isr isr:req vec:req
+    .macro tn_vector_dispatch isr:req vec:req
 
     .section    .vector_\vec,code
     .align  2
     .set    nomips16
-
-    .extern \isr
 
     .global __vector_dispatch_\vec
     .global isr_wrapper_\isr
@@ -59,6 +57,17 @@ __vector_dispatch_\vec:
     nop
     .end    __vector_dispatch_\vec
     .size   __vector_dispatch_\vec, .-__vector_dispatch_\vec
+
+    .endm
+
+/*----------------------------------------------------------------------------
+* Interrupt handler wrapper macro for software context saving IPL
+*----------------------------------------------------------------------------*/
+    .macro tn_soft_isr isr:req vec:req
+
+    .extern \isr
+
+    tn_vector_dispatch \isr \vec
 
     .set mips32r2
     .set nomips16
@@ -205,21 +214,9 @@ isr_wrapper_\isr\()_\vec:
 *----------------------------------------------------------------------------*/
     .macro tn_srs_isr isr:req vec:req
 
-    .section    .vector_\vec,code
-    .align  2
-    .set    nomips16
-
     .extern \isr
 
-    .global __vector_dispatch_\vec
-    .global isr_wrapper_\isr
-
-    .ent    __vector_dispatch_\vec
-__vector_dispatch_\vec:
-    j   isr_wrapper_\isr\()_\vec
-    nop
-    .end    __vector_dispatch_\vec
-    .size   __vector_dispatch_\vec, .-__vector_dispatch_\vec
+    tn_vector_dispatch \isr \vec
 
     .set mips32r2
     .set nomips16

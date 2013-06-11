@@ -4,7 +4,7 @@ TNKernel-PIC32
 A port of [TNKernel](http://www.tnkernel.com/ "TNKernel") for PIC32
 
 ---
-TNKernel-PIC32 is a port of TNKernel 2.6, based on the Cortex-M3 version. For a full description of the kernel API, please see the [TNKernel project documentation](http://www.tnkernel.com/tn_description.html "TNKernel project documentation")
+TNKernel-PIC32 is a port of TNKernel 2.6, based on the Cortex-M3 version. For a full description of the kernel API, please see the [TNKernel project documentation](http://www.tnkernel.com/tn_description.html "TNKernel project documentation").
 
 ##Context switch
 The context switch is implemented using the core software 0 interrupt. It should be configured to use the lowest priority in the system:
