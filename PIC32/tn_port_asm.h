@@ -39,6 +39,8 @@
     .extern tn_curr_run_task
     .extern tn_next_task_to_run
 
+    .equ IFS0SET, 0xBF881038
+
 /*----------------------------------------------------------------------------
 * Interrupt vector dispatch macro
 *----------------------------------------------------------------------------*/
@@ -133,13 +135,23 @@ isr_wrapper_\isr\()_\vec:
     mfhi    $v0
     mflo    $v1
     sw      $v0, 4($sp)
-    sw      $v1, 0($sp)
 
     /* Call ISR */
     jal     \isr
-    nop
+    sw      $v1, 0($sp)
 
-    /* Restore registers */
+    /* Pend context switch if needed */
+    lw      $t0, tn_curr_run_task
+    lw      $t1, tn_next_task_to_run
+    lw      $t0, 0($t0)
+    lw      $t1, 0($t1)
+    beq     $t0, $t1, 1f
+    lui     $t0, %hi(IFS0SET)
+    ori     $t1, $zero, 2
+    sw      $t1, %lo(IFS0SET)($t0)
+
+1:
+/* Restore registers */
     lw      $v1, 0($sp)
     lw      $v0, 4($sp)
     mtlo    $v1
@@ -166,18 +178,6 @@ isr_wrapper_\isr\()_\vec:
     di
     ehb
 
-    /* Pend context switch if needed */
-    lw      $k0, tn_curr_run_task
-    lw      $k1, tn_next_task_to_run
-    lw      $k0, 0($k0)
-    lw      $k1, 0($k1)
-    beq     $k0, $k1, 1f
-    nop
-    mfc0    $k0, $13                # c0_cause
-    ori     $k0, 256
-    mtc0    $k0, $13                # c0_cause
-
-1:
     /* Restore context */
     lw      $k0, 84($sp)
     mtc0    $k0, $14                # c0_epc
@@ -264,12 +264,22 @@ isr_wrapper_\isr\()_\vec:
     mfhi    $v0
     mflo    $v1
     sw      $v0, 4($sp)
-    sw      $v1, 0($sp)
 
     /* Call ISR */
     jal     \isr
-    nop
+    sw      $v1, 0($sp)
 
+    /* Pend context switch if needed */
+    lw      $t0, tn_curr_run_task
+    lw      $t1, tn_next_task_to_run
+    lw      $t0, 0($t0)
+    lw      $t1, 0($t1)
+    beq     $t0, $t1, 1f
+    lui     $t0, %hi(IFS0SET)
+    ori     $t1, $zero, 2
+    sw      $t1, %lo(IFS0SET)($t0)
+
+1:
     /* Restore registers */
     lw      $v1, 0($sp)
     lw      $v0, 4($sp)
@@ -279,18 +289,6 @@ isr_wrapper_\isr\()_\vec:
     di
     ehb
 
-    /* Pend context switch if needed */
-    lw      $k0, tn_curr_run_task
-    lw      $k1, tn_next_task_to_run
-    lw      $k0, 0($k0)
-    lw      $k1, 0($k1)
-    beq     $k0, $k1, 1f
-    nop
-    mfc0    $k0, $13                # c0_cause
-    ori     $k0, 256
-    mtc0    $k0, $13                # c0_cause
-
-1:
     /* Restore context */
     lw      $k0, 12($sp)
     mtc0    $k0, $14                # c0_epc
