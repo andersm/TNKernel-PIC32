@@ -47,8 +47,10 @@
     .macro tn_vector_dispatch isr:req vec:req
 
     .section    .vector_\vec,code
-    .align  2
+    .set    mips32r2
     .set    nomips16
+    .set    noreorder
+    .align  2
 
     .global __vector_dispatch_\vec
     .global isr_wrapper_\isr
@@ -56,7 +58,7 @@
     .ent    __vector_dispatch_\vec
 __vector_dispatch_\vec:
     j   isr_wrapper_\isr\()_\vec
-    nop
+    rdpgpr  $sp, $sp
     .end    __vector_dispatch_\vec
     .size   __vector_dispatch_\vec, .-__vector_dispatch_\vec
 
@@ -80,8 +82,6 @@ __vector_dispatch_\vec:
 
     .ent    isr_wrapper_\isr\()_\vec
 isr_wrapper_\isr\()_\vec:
-    rdpgpr  $sp, $sp
-
     /* Increase interrupt nesting count */
     lui     $k0, %hi(tn_int_nest_count)
     lw      $k1, %lo(tn_int_nest_count)($k0)
@@ -227,8 +227,6 @@ isr_wrapper_\isr\()_\vec:
 
     .ent    isr_wrapper_\isr\()_\vec
 isr_wrapper_\isr\()_\vec:
-    rdpgpr  $sp, $sp
-
     /* Increase interrupt nesting count */
     lui     $k0, %hi(tn_int_nest_count)
     lw      $k1, %lo(tn_int_nest_count)($k0)
