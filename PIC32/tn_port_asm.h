@@ -145,13 +145,13 @@ isr_wrapper_\isr\()_\vec:
     lw      $t1, tn_next_task_to_run
     lw      $t0, 0($t0)
     lw      $t1, 0($t1)
+    lui     $t2, %hi(IFS0SET)
     beq     $t0, $t1, 1f
-    lui     $t0, %hi(IFS0SET)
     ori     $t1, $zero, 2
-    sw      $t1, %lo(IFS0SET)($t0)
+    sw      $t1, %lo(IFS0SET)($t2)
 
 1:
-/* Restore registers */
+    /* Restore registers */
     lw      $v1, 0($sp)
     lw      $v0, 4($sp)
     mtlo    $v1
@@ -272,10 +272,10 @@ isr_wrapper_\isr\()_\vec:
     lw      $t1, tn_next_task_to_run
     lw      $t0, 0($t0)
     lw      $t1, 0($t1)
+    lui     $t2, %hi(IFS0SET)
     beq     $t0, $t1, 1f
-    lui     $t0, %hi(IFS0SET)
     ori     $t1, $zero, 2
-    sw      $t1, %lo(IFS0SET)($t0)
+    sw      $t1, %lo(IFS0SET)($t2)
 
 1:
     /* Restore registers */
