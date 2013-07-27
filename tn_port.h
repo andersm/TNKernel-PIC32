@@ -49,10 +49,13 @@
 
 #define  USE_ASM_FFS
 
-#define  TN_INT_STACK_SIZE         256
-#define  TN_TIMER_STACK_SIZE       128
-#define  TN_IDLE_STACK_SIZE        80
-#define  TN_MIN_STACK_SIZE         72
+#ifndef TN_INT_STACK_SIZE
+# define  TN_INT_STACK_SIZE        128  // Size of interrupt stack, in words
+#endif
+
+#define  TN_TIMER_STACK_SIZE       68   // Size of timer task stack, in words
+#define  TN_IDLE_STACK_SIZE        68   // Size of idle task stack, in words
+#define  TN_MIN_STACK_SIZE         68   // Minimum task stack size, in words
 
 #define  TN_BITS_IN_INT            32
 
@@ -60,7 +63,7 @@
 
 #define  MAKE_ALIG(a)  ((sizeof(a) + (TN_ALIG-1)) & (~(TN_ALIG-1)))
 
-#define  TN_PORT_STACK_EXPAND_AT_EXIT  40
+#define  TN_PORT_STACK_EXPAND_AT_EXIT  32
 
   //----------------------------------------------------
 

@@ -84,6 +84,10 @@ unsigned int * tn_stack_init(void * task_func,
  //-- filling register's position in the stack - for debugging only
 
     stk  = (unsigned int *)stack_start;     //-- Load stack pointer
+    *stk-- = 0;                             //-- ABI argument area
+    *stk-- = 0;
+    *stk-- = 0;
+    *stk-- = 0;
     *stk-- = (unsigned int)task_func;       //-- EPC
  //-- CU0 = 0
  //-- RP = 0
