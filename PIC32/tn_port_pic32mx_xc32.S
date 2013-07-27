@@ -47,11 +47,11 @@
     .global  tn_cpu_save_sr
     .global  tn_cpu_restore_sr
     .global  tn_start_exe
-    .global  tn_chk_irq_disabled
     .global  cs0_int_handler
     .global  tn_inside_int
 
     /* Constants */
+
     .equ IFS0CLR, 0xBF881034
     .equ context_size, 128
     .equ buildmode, simulator           /* workaround for buggy simulator */
@@ -287,22 +287,6 @@ tn_cpu_restore_sr:
 .endif
 
     .end tn_cpu_restore_sr
-
-/*----------------------------------------------------------------------------
-*
-*----------------------------------------------------------------------------*/
-    .set noreorder
-    .set noat
-    .ent tn_chk_irq_disabled
-
-tn_chk_irq_disabled:
-
-    mfc0    $v0, $12                    /* c0_status */
-    andi    $v0, $v0, 1
-    jr      $ra
-    xori    $v0, $v0, 1
-
-    .end tn_chk_irq_disabled
 
 /*----------------------------------------------------------------------------
 *

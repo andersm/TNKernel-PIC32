@@ -88,8 +88,6 @@ extern "C"  {
   void  tn_cpu_restore_sr(unsigned int sr);
   void  tn_start_exe(void);
 
-  int   tn_chk_irq_disabled(void);
-
 #ifdef __cplusplus
 }  /* extern "C" */
 #endif
@@ -104,20 +102,22 @@ extern "C"  {
 #define  tn_idisable_interrupt() __asm__ __volatile__("di %0; ehb" : "=d" (tn_save_status_reg))
 #define  tn_ienable_interrupt()  __builtin_mtc0(12, 0, tn_save_status_reg)
 
-#define  TN_CHECK_INT_CONTEXT   \
-             if(!tn_inside_int()) \
+#define  tn_chk_irq_disabled()   ((__builtin_mfc0(12, 0) & 1) == 0)
+
+#define  TN_CHECK_INT_CONTEXT           \
+             if(!tn_inside_int())       \
                 return TERR_WCONTEXT;
 
 #define  TN_CHECK_INT_CONTEXT_NORETVAL  \
-             if(!tn_inside_int())     \
+             if(!tn_inside_int())       \
                 return;
 
-#define  TN_CHECK_NON_INT_CONTEXT   \
-             if(tn_inside_int()) \
+#define  TN_CHECK_NON_INT_CONTEXT       \
+             if(tn_inside_int())        \
                 return TERR_WCONTEXT;
 
-#define  TN_CHECK_NON_INT_CONTEXT_NORETVAL   \
-             if(tn_inside_int()) \
+#define  TN_CHECK_NON_INT_CONTEXT_NORETVAL  \
+             if(tn_inside_int())            \
                 return ;
 
 
