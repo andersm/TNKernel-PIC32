@@ -31,9 +31,11 @@ TNKernel-PIC32 supports nested interrupts. The kernel provides assembly-language
     tn_srs_isr UartHandler _INT_UART_1_VECTOR
 
 ##Interrupt stack
-TNKernel-PIC32 uses a separate stack for interrupt handlers. Switching stack pointers is done automatically in the ISR handler wrapper macros. The size of the interrupt stack in words is configured in `tn_port.h`:
+TNKernel-PIC32 uses a separate stack for interrupt handlers. Switching stack pointers is done automatically in the ISR handler wrapper macros. The default size of the interrupt stack in words is set in `tn_port.h`:
 
-    #define  TN_INT_STACK_SIZE         256
+    #ifndef TN_INT_STACK_SIZE
+    # define  TN_INT_STACK_SIZE        128
+    #endif
  
 ---
 
