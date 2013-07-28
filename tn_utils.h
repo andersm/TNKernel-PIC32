@@ -2,7 +2,7 @@
 
   TNKernel real-time kernel
 
-  Copyright © 2004, 2010 Yuri Tiomkin
+  Copyright © 2004, 2013 Yuri Tiomkin
   All rights reserved.
 
   Permission to use, copy, modify, and distribute this software in source
@@ -25,7 +25,7 @@
 
 */
 
-  /* ver 2.6  */
+  /* ver 2.7  */
 
 #ifndef  _TN_UTILS_H_
 #define  _TN_UTILS_H_

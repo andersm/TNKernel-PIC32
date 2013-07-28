@@ -2,7 +2,7 @@
 
   TNKernel real-time kernel
 
-  Copyright © 2004, 2010 Yuri Tiomkin
+  Copyright © 2004, 2013 Yuri Tiomkin
   All rights reserved.
 
   Permission to use, copy, modify, and distribute this software in source
@@ -25,7 +25,7 @@
 
 */
 
-  /* ver 2.6  */
+  /* ver 2.7  */
 
 #include "tn.h"
 #include "tn_utils.h"
@@ -142,9 +142,12 @@ int  dque_fifo_write(TN_DQUE * dque, void * data_ptr)
 #if TN_CHECK_PARAM
    if(dque == NULL)
       return TERR_WRONG_PARAM;
+#endif
+
+   //-- v.2.7
+
    if(dque->num_entries <= 0)
       return TERR_OUT_OF_MEM;
-#endif
 
    flag = ((dque->tail_cnt == 0 && dque->header_cnt == dque->num_entries - 1)
              || dque->header_cnt == dque->tail_cnt-1);
@@ -167,9 +170,12 @@ int  dque_fifo_read(TN_DQUE * dque, void ** data_ptr)
 #if TN_CHECK_PARAM
    if(dque == NULL || data_ptr == NULL)
       return TERR_WRONG_PARAM;
+#endif
+
+   //-- v.2.7  Thanks to kosyak© from electronix.ru
+
    if(dque->num_entries <= 0)
       return TERR_OUT_OF_MEM;
-#endif
 
    if(dque->tail_cnt == dque->header_cnt)
       return TERR_UNDERFLOW; //-- empty

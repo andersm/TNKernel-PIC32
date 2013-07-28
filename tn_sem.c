@@ -2,7 +2,7 @@
 
   TNKernel real-time kernel
 
-  Copyright © 2004, 2010 Yuri Tiomkin
+  Copyright © 2004, 2013 Yuri Tiomkin
   All rights reserved.
 
   Permission to use, copy, modify, and distribute this software in source
@@ -25,7 +25,7 @@
 
 */
 
-  /* ver 2.6  */
+  /* ver 2.7  */
 
 #include "tn.h"
 #include "tn_utils.h"
@@ -76,10 +76,10 @@ int tn_sem_delete(TN_SEM * sem)
 
    TN_CHECK_NON_INT_CONTEXT
 
+   tn_disable_interrupt(); // v.2.7 - thanks to Eugene Scopal
+
    while(!is_queue_empty(&(sem->wait_queue)))
    {
-      tn_disable_interrupt();
-
      //--- delete from the sem wait queue
 
       que = queue_remove_head(&(sem->wait_queue));
@@ -89,11 +89,9 @@ int tn_sem_delete(TN_SEM * sem)
          task->task_wait_rc = TERR_DLT;
          tn_enable_interrupt();
          tn_switch_context();
+         tn_disable_interrupt(); // v.2.7
       }
    }
-
-   if(tn_chk_irq_disabled() == 0) // int enable
-      tn_disable_interrupt();
 
    sem->id_sem = 0; // Semaphore not exists now
 

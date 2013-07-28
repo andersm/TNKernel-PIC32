@@ -2,7 +2,7 @@
 
   TNKernel real-time kernel
 
-  Copyright © 2004, 2010 Yuri Tiomkin
+  Copyright © 2004, 2013 Yuri Tiomkin
   PIC32 version modifications copyright © 2013 Anders Montonen
   All rights reserved.
 
@@ -26,7 +26,7 @@
 
 */
 
-   /* ver 2.6  */
+   /* ver 2.7  */
 
 
 

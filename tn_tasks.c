@@ -2,7 +2,7 @@
 
   TNKernel real-time kernel
 
-  Copyright © 2004, 2010 Yuri Tiomkin
+  Copyright © 2004, 2013 Yuri Tiomkin
   All rights reserved.
 
   Permission to use, copy, modify, and distribute this software in source
@@ -25,7 +25,7 @@
 
 */
 
-  /* ver 2.6 */
+  /* ver 2.7 */
 
 #include "tn.h"
 #include "tn_utils.h"
@@ -263,10 +263,11 @@ int tn_task_wakeup(TN_TCB * task)
          rc = TERR_NO_ERR;
       }
       else
-      {
-         if(tn_curr_run_task->wakeup_count == 0) //-- if here - the task is
-         {                                       //-- not in the SLEEP mode
-            tn_curr_run_task->wakeup_count++;
+      {      // v.2.7 - Thanks to Eugene Scopal
+         //-- Check for 0 - case max wakeup_count value is 1  
+         if(task->wakeup_count == 0) //-- if here - the task is
+         {                           //-- not in the SLEEP mode
+            task->wakeup_count++;
             rc = TERR_NO_ERR;
          }
          else
@@ -313,10 +314,10 @@ int tn_task_iwakeup(TN_TCB * task)
          rc = TERR_NO_ERR;
       }
       else
-      {
-         if(tn_curr_run_task->wakeup_count == 0)  //-- if here - the task is
-         {                                        //-- not in the SLEEP mode
-            tn_curr_run_task->wakeup_count++;
+      {     // v.2.7 - Thanks to Eugene Scopal
+         if(task->wakeup_count == 0)  //-- if here - the task is
+         {                            //-- not in the SLEEP mode
+            task->wakeup_count++;
             rc = TERR_NO_ERR;
          }
          else
@@ -481,18 +482,23 @@ int tn_task_irelease_wait(TN_TCB * task)
 }
 
 //----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 void tn_task_exit(int attr)
 {
-
+	/*  
+	  The structure is used to force GCC compiler properly locate and use
+   	'stack_exp' - thanks to Angelo R. Di Filippo
+	*/
+   struct  // v.2.7
+   {	
 #ifdef USE_MUTEXES
-   CDLL_QUEUE * que;
-   TN_MUTEX * mutex;
+      CDLL_QUEUE * que;
+      TN_MUTEX * mutex;
 #endif
-
-   TN_TCB * task;
-   unsigned int * ptr_stack;
-   volatile int stack_exp[TN_PORT_STACK_EXPAND_AT_EXIT];
-
+      TN_TCB * task;
+      volatile int stack_exp[TN_PORT_STACK_EXPAND_AT_EXIT];
+   }data;
+	 
    TN_CHECK_NON_INT_CONTEXT_NORETVAL
 
 #ifdef TNKERNEL_PORT_MSP430X
@@ -501,10 +507,6 @@ void tn_task_exit(int attr)
    tn_cpu_save_sr();  //-- For ARM - disable interrupts without saving SPSR
 #endif
 
-   //-- To use stack_exp[] and avoid warning message
-
-   stack_exp[0] = (int)tn_system_state;
-   ptr_stack =(unsigned int *)stack_exp[0];
    //--------------------------------------------------
 
    //-- Unlock all mutexes, locked by the task
@@ -512,33 +514,33 @@ void tn_task_exit(int attr)
 #ifdef USE_MUTEXES
    while(!is_queue_empty(&(tn_curr_run_task->mutex_queue)))
    {
-      que = queue_remove_head(&(tn_curr_run_task->mutex_queue));
-      mutex = get_mutex_by_mutex_queque(que);
-      do_unlock_mutex(mutex);
+      data.que = queue_remove_head(&(tn_curr_run_task->mutex_queue));
+      data.mutex = get_mutex_by_mutex_queque(data.que);
+      do_unlock_mutex(data.mutex);
    }
 #endif
 
-   task = tn_curr_run_task;
+   data.task = tn_curr_run_task;
    task_to_non_runnable(tn_curr_run_task);
 
-   task_set_dormant_state(task);
-   ptr_stack = tn_stack_init(task->task_func_addr,
-                             task->stk_start,
-                             task->task_func_param);
-   task->task_stk = ptr_stack;  //-- Pointer to task top of stack,when not running
+   task_set_dormant_state(data.task);
+	 //-- Pointer to task top of stack,when not running
+   data.task->task_stk = tn_stack_init(data.task->task_func_addr,
+                                  data.task->stk_start,
+                                  data.task->task_func_param);
 
-   if(task->activate_count > 0)  //-- Cannot exit
+   if(data.task->activate_count > 0)  //-- Cannot exit
    {
-      task->activate_count--;
-      task_to_runnable(task);
+      data.task->activate_count--;
+      task_to_runnable(data.task);
    }
    else  // V 2.6 Thanks to Alex Borisov
    {
       if(attr == TN_EXIT_AND_DELETE_TASK)
       {
-         queue_remove_entry(&(task->create_queue));
+         queue_remove_entry(&(data.task->create_queue));
          tn_created_tasks_qty--;
-         task->id_task = 0;
+         data.task->id_task = 0;
       }
    }
 
@@ -551,15 +553,16 @@ int tn_task_terminate(TN_TCB * task)
    TN_INTSAVE_DATA
 
    int rc;
-   unsigned int * ptr_stack;
-
+/* see the structure purpose in tn_task_exit() */
+	 struct // v.2.7
+	 {
 #ifdef USE_MUTEXES
-   CDLL_QUEUE * que;
-   TN_MUTEX * mutex;
+      CDLL_QUEUE * que;
+      TN_MUTEX * mutex;
 #endif
-
-   volatile int stack_exp[TN_PORT_STACK_EXPAND_AT_EXIT];
-
+      volatile int stack_exp[TN_PORT_STACK_EXPAND_AT_EXIT];
+   }data; 
+	 
 #if TN_CHECK_PARAM
    if(task == NULL)
       return  TERR_WRONG_PARAM;
@@ -571,10 +574,6 @@ int tn_task_terminate(TN_TCB * task)
 
    tn_disable_interrupt();
 
-   //-- To use stack_exp[] and avoid warning message
-
-   stack_exp[0] = (int)tn_system_state;
-   ptr_stack =(unsigned int *)stack_exp[0];
 
    //--------------------------------------------------
 
@@ -603,19 +602,19 @@ int tn_task_terminate(TN_TCB * task)
 #ifdef USE_MUTEXES
       while(!is_queue_empty(&(task->mutex_queue)))
       {
-         que = queue_remove_head(&(task->mutex_queue));
-         mutex = get_mutex_by_mutex_queque(que);
-         do_unlock_mutex(mutex);
+         data.que = queue_remove_head(&(task->mutex_queue));
+         data.mutex = get_mutex_by_mutex_queque(data.que);
+         do_unlock_mutex(data.mutex);
       }
 #endif
 
       task_set_dormant_state(task);
-      ptr_stack = tn_stack_init(task->task_func_addr,
-                             task->stk_start,
-                             task->task_func_param);
-      task->task_stk = ptr_stack;  //-- Pointer to task top of the stack
-                                   //-- when not running
+			//-- Pointer to task top of the stack when not running
 
+      task->task_stk = tn_stack_init(task->task_func_addr,
+                                     task->stk_start,
+                                     task->task_func_param);
+       
       if(task->activate_count > 0) //-- Cannot terminate
       {
          task->activate_count--;
@@ -729,7 +728,6 @@ void find_next_task_to_run(void)
    tmp = ffs_asm(tn_ready_to_run_bmp);
    tmp--;
 #else
-
    mask = 1;
    tmp = 0;
    for(i=0; i < TN_BITS_IN_INT; i++)  //-- for each bit in bmp
@@ -985,9 +983,9 @@ void set_current_priority(TN_TCB * task, int priority)
 //----------------------------------------------------------------------------
 void task_set_dormant_state(TN_TCB* task)
 {
+	     // v.2.7 - thanks to Alexander Gacov, Vyacheslav Ovsiyenko
    queue_reset(&(task->task_queue));
    queue_reset(&(task->timer_queue));
-   queue_reset(&(task->create_queue));
 
 #ifdef USE_MUTEXES
 

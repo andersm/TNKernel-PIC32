@@ -2,7 +2,7 @@
 
   TNKernel real-time kernel
 
-  Copyright © 2004, 2010 Yuri Tiomkin
+  Copyright © 2004, 2013 Yuri Tiomkin
   All rights reserved.
 
   Permission to use, copy, modify, and distribute this software in source
@@ -25,7 +25,7 @@
 
 */
 
-  /* ver 2.6  */
+  /* ver 2.7  */
 
 #include "tn.h"
 #include "tn_utils.h"
@@ -128,10 +128,10 @@ int tn_fmem_delete(TN_FMP * fmp)
 
    TN_CHECK_NON_INT_CONTEXT
 
+   tn_disable_interrupt();    // v.2.7 - thanks to Eugene Scopal
+
    while(!is_queue_empty(&(fmp->wait_queue)))
    {
-      tn_disable_interrupt();
-
      //--- delete from sem wait queue
 
       que = queue_remove_head(&(fmp->wait_queue));
@@ -141,11 +141,9 @@ int tn_fmem_delete(TN_FMP * fmp)
          task->task_wait_rc = TERR_DLT;
          tn_enable_interrupt();
          tn_switch_context();
+         tn_disable_interrupt();    // v.2.7
       }
    }
-
-   if(tn_chk_irq_disabled() == 0)
-      tn_disable_interrupt();
 
    fmp->id_fmp = 0;   //-- Fixed-size memory pool not exists now
 

@@ -2,7 +2,7 @@
 
   TNKernel real-time kernel
 
-  Copyright © 2004, 2010 Yuri Tiomkin
+  Copyright ï¿½ 2004, 2013 Yuri Tiomkin
   All rights reserved.
 
   Permission to use, copy, modify, and distribute this software in source
@@ -25,7 +25,7 @@
 
 */
 
-  /* ver 2.6 */
+  /* ver 2.7 */
 
 #ifndef _TH_H_
 #define _TH_H_
@@ -260,6 +260,11 @@ typedef struct _TN_MUTEX
                                        // All mutexes have the same id_mutex magic number (ver 2.x)
 }TN_MUTEX;
 
+//-- Thanks to megajohn from electronix.ru - for IAR Embedded C++ compatibility
+#ifdef __cplusplus       
+extern "C"  {
+#endif
+
  //-- Global vars
 
 extern CDLL_QUEUE tn_ready_list[TN_NUM_PRIORITY];   //-- all ready to run(RUNNABLE) tasks
@@ -289,27 +294,26 @@ extern void * tn_int_sp;                //-- Saved ISR stack pointer
         ((type *)((unsigned char *)(address) - (unsigned char *)(&((type *)0)->field)))
 #endif
 
+//-- v.2.7
+
 #define get_task_by_tsk_queue(que)                  \
-        CONTAINING_RECORD(que, TN_TCB, task_queue)
+        que ? CONTAINING_RECORD(que, TN_TCB, task_queue) : 0
 
 #define get_task_by_timer_queque(que)               \
-        CONTAINING_RECORD(que, TN_TCB, timer_queue)
+        que ? CONTAINING_RECORD(que, TN_TCB, timer_queue) : 0
 
 #define get_mutex_by_mutex_queque(que)              \
-        CONTAINING_RECORD(que, TN_MUTEX, mutex_queue)
+        que ? CONTAINING_RECORD(que, TN_MUTEX, mutex_queue) : 0
 
 #define get_mutex_by_wait_queque(que)               \
-        CONTAINING_RECORD(que, TN_MUTEX, wait_queue)
+        que ? CONTAINING_RECORD(que, TN_MUTEX, wait_queue) : 0
 
 #define get_task_by_block_queque(que)  \
-        CONTAINING_RECORD(que, TN_TCB, block_queue)
+        que ? CONTAINING_RECORD(que, TN_TCB, block_queue) : 0
 
 #define get_mutex_by_lock_mutex_queque(que) \
-        CONTAINING_RECORD(que, TN_MUTEX, mutex_queue)
+        que ? CONTAINING_RECORD(que, TN_MUTEX, mutex_queue) : 0
 
-#ifdef __cplusplus
-extern "C"  {
-#endif
 
    //--- User function
 
@@ -323,13 +327,13 @@ int tn_sys_tslice_ticks(int priority, int value);
 
 //----- tn_tasks.c ----------------------------------
 
-int tn_task_create(TN_TCB * task,             //-- task TCB
-                 void (*task_func)(void *param),  //-- task function
-                 int priority,                    //-- task priority
-                 unsigned int * task_stack_start, //-- task stack first addr in memory (bottom)
-                 int task_stack_size,             //-- task stack size (in sizeof(void*),not bytes)
-                 void * param,                    //-- task function parameter
-                 int option);                       //-- Creation option
+int tn_task_create(TN_TCB * task,             
+                 void (*task_func)(void *param),
+                 int priority,
+                 unsigned int * task_stack_start,
+                 int task_stack_size,
+                 void * param,
+                 int option);
 int tn_task_suspend(TN_TCB * task);
 int tn_task_resume(TN_TCB * task);
 int tn_task_sleep(unsigned long timeout);

@@ -2,7 +2,7 @@
 
   TNKernel real-time kernel
 
-  Copyright © 2004, 2010 Yuri Tiomkin
+  Copyright ï¿½ 2004, 2013 Yuri Tiomkin
   All rights reserved.
 
   Permission to use, copy, modify, and distribute this software in source
@@ -25,7 +25,7 @@
 
 */
 
-  /* ver 2.6 */
+  /* ver 2.7 */
 
 #include "tn.h"
 #include "tn_utils.h"
@@ -287,10 +287,13 @@ void  tn_tick_int_processing()
         //-- If ready queue is not empty and qty  of queue's tasks > 1
          if(!(is_queue_empty((CDLL_QUEUE *)pri_queue)) && pri_queue->next->next != pri_queue)
          {
-           //-- Remove task from tail and add it to the head of
+            // v.2.7  - Thanks to Vyacheslav Ovsiyenko
+
+           //-- Remove task from head and add it to the tail of
            //-- ready queue for current priority
-            curr_que = queue_remove_tail(&(tn_ready_list[priority]));
-            queue_add_head(&(tn_ready_list[priority]),(CDLL_QUEUE *)curr_que);
+
+            curr_que = queue_remove_head(&(tn_ready_list[priority]));
+            queue_add_tail(&(tn_ready_list[priority]),(CDLL_QUEUE *)curr_que);
          }
       }
    }

@@ -2,7 +2,7 @@
 
   TNKernel real-time kernel
 
-  Copyright © 2004, 2010 Yuri Tiomkin
+  Copyright © 2004, 2013 Yuri Tiomkin
   All rights reserved.
 
   Permission to use, copy, modify, and distribute this software in source
@@ -25,7 +25,7 @@
 
 */
 
-  /* ver 2.6  */
+  /* ver 2.7  */
 
 #include "tn.h"
 #include "tn_utils.h"
@@ -80,10 +80,10 @@ int tn_event_delete(TN_EVENT * evf)
 
    TN_CHECK_NON_INT_CONTEXT
 
+   tn_disable_interrupt();    // v.2.7 - thanks to Eugene Scopal
+
    while(!is_queue_empty(&(evf->wait_queue)))
    {
-      tn_disable_interrupt();
-
      //--- delete from sem wait queue
 
       que = queue_remove_head(&(evf->wait_queue));
@@ -93,11 +93,9 @@ int tn_event_delete(TN_EVENT * evf)
          task->task_wait_rc = TERR_DLT;
          tn_enable_interrupt();
          tn_switch_context();
+         tn_disable_interrupt();    // v.2.7
       }
    }
-
-   if(tn_chk_irq_disabled() == 0) // int enable
-      tn_disable_interrupt();
 
    evf->id_event = 0; // Event not exists now
 
@@ -395,8 +393,15 @@ static int scan_event_waitqueue(TN_EVENT * evf)
    CDLL_QUEUE * que;
    TN_TCB * task;
    int fCond;
+   int rc = 0;
 
    que = evf->wait_queue.next;
+
+   // checking ALL of the tasks waiting on the event.
+
+   // for the event with attr TN_EVENT_ATTR_SINGLE the only one task
+   // may be in the queue
+
    while(que != &(evf->wait_queue))
    {
       task = get_task_by_tsk_queue(que);
@@ -413,14 +418,12 @@ static int scan_event_waitqueue(TN_EVENT * evf)
       {
          queue_remove_entry(&task->task_queue);
          task->ewait_pattern = evf->pattern;
-         if(task_wait_complete(task))
-            return 1;
-         else
-            return 0;
+         if(task_wait_complete(task))   // v.2.7 - thanks to Eugene Scopal
+            rc = 1;
       }
    }
 
-   return 0;
+   return rc;
 }
 
 //----------------------------------------------------------------------------
