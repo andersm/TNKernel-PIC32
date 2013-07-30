@@ -50,13 +50,21 @@
 
    //--- The system configuration (change it for your particular project)
 
-#define  TN_CHECK_PARAM       1
+#ifndef  TN_CHECK_PARAM
+# define TN_CHECK_PARAM       1
+#endif
 
-#define  TN_MEAS_PERFORMANCE  1
+#ifndef  TN_MEAS_PERFORMANCE
+# define TN_MEAS_PERFORMANCE  1
+#endif
 
-#define  USE_MUTEXES          1
+#ifndef  USE_MUTEXES
+# define USE_MUTEXES          1
+#endif
 
-#define  USE_EVENTS           1
+#ifndef  USE_EVENTS
+# define USE_EVENTS           1
+#endif
 
    //--- Port
 
