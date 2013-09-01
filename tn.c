@@ -116,7 +116,13 @@ void tn_start_system(void)
    tn_next_task_to_run = NULL;
    tn_curr_run_task    = NULL;
 
+   //-- Fill interrupt stack space with TN_FILL_STACK_VAL
+
+   for(i=0;i < TN_INT_STACK_SIZE;i++)
+       tn_int_stack[i] = TN_FILL_STACK_VAL;
+
    //-- Pre-decrement stack
+
    tn_int_sp = &(tn_int_stack[TN_INT_STACK_SIZE]);
 
   //-- System tasks
