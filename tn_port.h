@@ -96,11 +96,18 @@ extern "C"  {
 
 #define  TN_INTSAVE_DATA_INT     int tn_save_status_reg = 0;
 #define  TN_INTSAVE_DATA         int tn_save_status_reg = 0;
-#define  tn_disable_interrupt()  __asm__ __volatile__("di %0; ehb" : "=d" (tn_save_status_reg))
-#define  tn_enable_interrupt()   __builtin_mtc0(12, 0, tn_save_status_reg)
 
-#define  tn_idisable_interrupt() __asm__ __volatile__("di %0; ehb" : "=d" (tn_save_status_reg))
-#define  tn_ienable_interrupt()  __builtin_mtc0(12, 0, tn_save_status_reg)
+#ifdef __mips16
+# define tn_disable_interrupt()  tn_save_status_reg = tn_cpu_save_sr()
+# define tn_enable_interrupt()   tn_cpu_restore_sr(tn_save_status_reg)
+# define tn_idisable_interrupt() tn_save_status_reg = tn_cpu_save_sr()
+# define tn_ienable_interrupt()  tn_cpu_restore_sr(tn_save_status_reg)
+#else
+# define tn_disable_interrupt()  __asm__ __volatile__("di %0; ehb" : "=d" (tn_save_status_reg))
+# define tn_enable_interrupt()   __builtin_mtc0(12, 0, tn_save_status_reg)
+# define tn_idisable_interrupt() __asm__ __volatile__("di %0; ehb" : "=d" (tn_save_status_reg))
+# define tn_ienable_interrupt()  __builtin_mtc0(12, 0, tn_save_status_reg)
+#endif
 
 #define  tn_chk_irq_disabled()   ((__builtin_mfc0(12, 0) & 1) == 0)
 
