@@ -67,7 +67,7 @@ __vector_dispatch_\vec:
 /*----------------------------------------------------------------------------
 * Interrupt handler wrapper macro for software context saving IPL
 *----------------------------------------------------------------------------*/
-    .macro tn_soft_isr isr:req vec:req
+    .macro tn_soft_isr isr:req vec:req isa=mips32
 
     .extern \isr
 
@@ -137,7 +137,13 @@ isr_wrapper_\isr\()_\vec:
     sw      $v0, 4($sp)
 
     /* Call ISR */
+.if \isa == mips16
+/* Can't use JALX due to assembler bugs */
+    la      $t0, \isr
+    jalr    $t0
+.else
     jal     \isr
+.endif
     sw      $v1, 0($sp)
 
     /* Pend context switch if needed */
@@ -212,7 +218,7 @@ isr_wrapper_\isr\()_\vec:
 /*----------------------------------------------------------------------------
 * Interrupt handler wrapper macro for shadow register context saving IPL
 *----------------------------------------------------------------------------*/
-    .macro tn_srs_isr isr:req vec:req
+    .macro tn_srs_isr isr:req vec:req isa=mips32
 
     .extern \isr
 
@@ -264,7 +270,13 @@ isr_wrapper_\isr\()_\vec:
     sw      $v0, 4($sp)
 
     /* Call ISR */
+.if \isa == mips16
+/* Can't use JALX due to assembler bugs */
+    la      $t0, \isr
+    jalr    $t0
+.else
     jal     \isr
+.endif
     sw      $v1, 0($sp)
 
     /* Pend context switch if needed */

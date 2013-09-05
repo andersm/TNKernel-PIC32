@@ -22,6 +22,7 @@ TNKernel-PIC32 supports nested interrupts. The kernel provides assembly-language
     #include "tn_port_asm.h"
     
     #define _CORE_TIMER_VECTOR 0
+    #define _TIMER1_VECTOR     4
     #define _INT_UART_1_VECTOR 24
     
     # Core timer interrupt handler using software interrupt context saving
@@ -29,6 +30,9 @@ TNKernel-PIC32 supports nested interrupts. The kernel provides assembly-language
     
     # High-priority UART interrupt handler using shadow register set
     tn_srs_isr UartHandler _INT_UART_1_VECTOR
+    
+    # Timer 1 interrupt handler using MIPS16e
+    tn_soft_isr Timer1Handler _TIMER1_VECTOR mips16
 
 ##Interrupt stack
 TNKernel-PIC32 uses a separate stack for interrupt handlers. Switching stack pointers is done automatically in the ISR handler wrapper macros. The default size of the interrupt stack in words is set in `tn_port.h`:
