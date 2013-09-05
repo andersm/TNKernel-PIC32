@@ -194,9 +194,9 @@ cs0_int_handler:
     ins     $k0, $zero, 8, 1            /* clear IP0 */
     mtc0    $k0, $13
 
-    li      $k0, IFS0CLR                /* clear cs0 pending bit */
+    lui     $k0, %hi(IFS0CLR)           /* clear cs0 pending bit */
     ori     $k1, $zero, 2
-    sw      $k1, 0($k0)
+    sw      $k1, %lo(IFS0CLR)($k0)
 
     mtc0    $t2, $12                    /* re-enable interrupts */
 
