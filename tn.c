@@ -2,7 +2,8 @@
 
   TNKernel real-time kernel
 
-  Copyright ï¿½ 2004, 2013 Yuri Tiomkin
+  Copyright © 2004, 2013 Yuri Tiomkin
+  PIC32 version modifications copyright © 2013 Anders Montonen
   All rights reserved.
 
   Permission to use, copy, modify, and distribute this software in source

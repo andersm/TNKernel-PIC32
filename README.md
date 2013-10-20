@@ -17,7 +17,7 @@ The context switch is implemented using the core software 0 interrupt. It should
 The interrupt priority level used by the context switch interrupt should not be configured to use shadow register sets.
 
 ##Interrupts
-TNKernel-PIC32 supports nested interrupts. The kernel provides assembly-language macros for calling C-language interrupt service routines. Both software and shadow register interrupt context saving is supported:
+TNKernel-PIC32 supports nested interrupts. The kernel provides assembly-language macros for calling C-language interrupt service routines, which can use either MIPS32 or MIPS16e mode. Both software and shadow register interrupt context saving is supported:
 
     #include "tn_port_asm.h"
     
@@ -30,9 +30,6 @@ TNKernel-PIC32 supports nested interrupts. The kernel provides assembly-language
     
     # High-priority UART interrupt handler using shadow register set
     tn_srs_isr UartHandler _INT_UART_1_VECTOR
-    
-    # Timer 1 interrupt handler using MIPS16e
-    tn_soft_isr Timer1Handler _TIMER1_VECTOR mips16
 
 ##Interrupt stack
 TNKernel-PIC32 uses a separate stack for interrupt handlers. Switching stack pointers is done automatically in the ISR handler wrapper macros. The default size of the interrupt stack in words is set in `tn_port.h`:
@@ -47,7 +44,7 @@ The kernel is released under the BSD license as follows:
 
     TNKernel real-time kernel
 
-    Copyright © 2004, 2010 Yuri Tiomkin
+    Copyright © 2004, 2013 Yuri Tiomkin
     PIC32 version modifications copyright © 2013 Anders Montonen
     All rights reserved.
 

@@ -2,7 +2,8 @@
 
   TNKernel real-time kernel
 
-  Copyright ï¿½ 2004, 2013 Yuri Tiomkin
+  Copyright © 2004, 2013 Yuri Tiomkin
+  PIC32 version modifications copyright © 2013 Anders Montonen
   All rights reserved.
 
   Permission to use, copy, modify, and distribute this software in source
@@ -269,7 +270,7 @@ typedef struct _TN_MUTEX
 }TN_MUTEX;
 
 //-- Thanks to megajohn from electronix.ru - for IAR Embedded C++ compatibility
-#ifdef __cplusplus       
+#ifdef __cplusplus
 extern "C"  {
 #endif
 
@@ -335,7 +336,7 @@ int tn_sys_tslice_ticks(int priority, int value);
 
 //----- tn_tasks.c ----------------------------------
 
-int tn_task_create(TN_TCB * task,             
+int tn_task_create(TN_TCB * task,
                  void (*task_func)(void *param),
                  int priority,
                  unsigned int * task_stack_start,
