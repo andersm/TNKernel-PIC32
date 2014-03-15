@@ -57,7 +57,7 @@
     .equ buildmode, simulator           /* workaround for buggy simulator */
 
 /*----------------------------------------------------------------------------
-* Interrups should be disabled here
+* Interrupts should be disabled here
 *----------------------------------------------------------------------------*/
     .set noreorder
     .set noat
@@ -76,7 +76,7 @@ tn_start_exe:
     .end tn_start_exe
 
 /*----------------------------------------------------------------------------
-* Interrups should be disabled here
+* Interrupts should be disabled here
 *----------------------------------------------------------------------------*/
     .set noreorder
     .set noat
