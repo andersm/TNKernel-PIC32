@@ -53,6 +53,7 @@
     /* Constants */
 
     .equ IFS0CLR, 0xBF881034
+    .equ IFS0SET, 0xBF881038
     .equ context_size, 128
     .equ buildmode, simulator           /* workaround for buggy simulator */
 
@@ -104,21 +105,16 @@ tn_switch_context:
     lw      $t0, 0($t0)
     lw      $t1, 0($t1)
     beq     $t0, $t1, 1f
-    nop
 
-    /* invoke CS0 interrupt */
-    mfc0    $t0, $13                    /* c0_cause */
-    ori     $t0, 256
-    mtc0    $t0, $13                    /* c0_cause */
+    /* pend CS0 interrupt */
+    lui     $t0, %hi(IFS0SET)
+    ori     $t1, 2
+    sw      $t1, %lo(IFS0SET)($t0)
+    nop
 
 1:
-.if buildmode != simulator
-    jr.hb   $ra
+    jr      $ra
     nop
-.else
-    jr   $ra
-    ehb
-.endif
 
     .end tn_switch_context
 
