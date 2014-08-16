@@ -108,7 +108,7 @@ tn_switch_context:
 
     /* pend CS0 interrupt */
     lui     $t0, %hi(IFS0SET)
-    ori     $t1, 2
+    ori     $t1, $zero, 2
     sw      $t1, %lo(IFS0SET)($t0)
     nop
 
