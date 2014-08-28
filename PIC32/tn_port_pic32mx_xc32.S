@@ -70,9 +70,11 @@ tn_start_exe:
     la      $t1, tn_system_state
     sb      $t0, 0($t1)
 
-    lw      $k1, tn_curr_run_task       /* = tn_next_task_to_run */
+    lw      $t1, tn_next_task_to_run
+    la      $t0, tn_curr_run_task
+    lw      $sp, 0($t1)                 /* load new task SP */
     j       tn_restore_context
-    lw      $sp, 0($k1)                 /* load new task SP */
+    sw      $t1, 0($t0)                 /* tn_curr_run_task = tn_next_task_to_run */
 
     .end tn_start_exe
 
