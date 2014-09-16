@@ -254,11 +254,11 @@ int tn_sys_tslice_ticks(int priority,int value)
 
    TN_CHECK_NON_INT_CONTEXT
 
-   tn_disable_interrupt();
-
    if(priority <= 0 || priority >= TN_NUM_PRIORITY-1 ||
                                 value < 0 || value > MAX_TIME_SLICE)
       return TERR_WRONG_PARAM;
+
+   tn_disable_interrupt();
 
    tn_tslice_ticks[priority] = value;
 
