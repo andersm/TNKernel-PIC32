@@ -553,15 +553,10 @@ int tn_task_terminate(TN_TCB * task)
    TN_INTSAVE_DATA
 
    int rc;
-/* see the structure purpose in tn_task_exit() */
-	 struct // v.2.7
-	 {
 #ifdef USE_MUTEXES
-      CDLL_QUEUE * que;
-      TN_MUTEX * mutex;
+   CDLL_QUEUE * que;
+   TN_MUTEX * mutex;
 #endif
-      volatile int stack_exp[TN_PORT_STACK_EXPAND_AT_EXIT];
-   }data; 
 	 
 #if TN_CHECK_PARAM
    if(task == NULL)
@@ -602,9 +597,9 @@ int tn_task_terminate(TN_TCB * task)
 #ifdef USE_MUTEXES
       while(!is_queue_empty(&(task->mutex_queue)))
       {
-         data.que = queue_remove_head(&(task->mutex_queue));
-         data.mutex = get_mutex_by_mutex_queque(data.que);
-         do_unlock_mutex(data.mutex);
+         que = queue_remove_head(&(task->mutex_queue));
+         mutex = get_mutex_by_mutex_queque(que);
+         do_unlock_mutex(mutex);
       }
 #endif
 
