@@ -17,7 +17,22 @@ The context switch is implemented using the core software 0 interrupt. It should
 The interrupt priority level used by the context switch interrupt should not be configured to use shadow register sets.
 
 ##Interrupts
-TNKernel-PIC32 supports nested interrupts. The kernel provides assembly-language macros for calling C-language interrupt service routines, which can use either MIPS32 or MIPS16e mode. Both software and shadow register interrupt context saving is supported:
+TNKernel-PIC32 supports nested interrupts. The kernel provides C-language macros for calling C-language interrupt service routines, which can use either MIPS32 or MIPS16e mode. Both software and shadow register interrupt context saving is supported. Usage is as follows:
+
+    /* Timer 1 interrupt handler using software interrupt context saving */
+    tn_soft_isr(_TIMER_1_VECTOR)
+    {
+       /* here is your ISR code, including clearing of interrupt flag, and so on */
+    }
+
+    /* High-priority UART interrupt handler using shadow register set */
+    tn_srs_isr(_UART_1_VECTOR)
+    {
+       /* here is your ISR code, including clearing of interrupt flag, and so on */
+    }
+
+
+Alternatively, the kernel provides assembly-language macros for calling C-language interrupt service routines:
 
     #include "tn_port_asm.h"
     
